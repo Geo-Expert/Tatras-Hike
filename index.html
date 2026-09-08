@@ -412,15 +412,14 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
   import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
 
-  // Your Firebase Configuration
   const firebaseConfig = {
     apiKey: "AIzaSyCQGhMH5nOqmpHMJDSnwJguEwHUYu7b2Xs",
     authDomain: "tatras-trek.firebaseapp.com",
+    databaseURL: "https://tatras-trek-default-rtdb.firebaseio.com",
     projectId: "tatras-trek",
     storageBucket: "tatras-trek.firebasestorage.app",
     messagingSenderId: "1074553341563",
-    appId: "1:1074553341563:web:4901f95f85647a8c5084de",
-    databaseURL: "https://tatras-trek-default-rtdb.firebaseio.com"
+    appId: "1:1074553341563:web:4901f95f85647a8c5084de"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -457,29 +456,36 @@
   let rawExpenses = [];
   let masterGear = [];
 
-  // Listeners
+  function saveData(path, data) {
+    set(ref(db, path), data).catch((err) => {
+      console.error(`Firebase Write Error on /${path}:`, err);
+      alert("Permission denied or database offline! Check Firebase Database Rules.");
+    });
+  }
+
+  // Realtime Listeners
   onValue(ref(db, 'gear'), (snapshot) => {
     const data = snapshot.val();
     if (data) {
       masterGear = data;
     } else {
-      set(ref(db, 'gear'), initialGear);
+      saveData('gear', initialGear);
       masterGear = initialGear;
     }
     renderGear();
-  });
+  }, (err) => console.error("Firebase Read Error (gear):", err));
 
   onValue(ref(db, 'expenses'), (snapshot) => {
     const data = snapshot.val();
     if (data) {
       rawExpenses = data;
     } else {
-      set(ref(db, 'expenses'), initialExpenses);
+      saveData('expenses', initialExpenses);
       rawExpenses = initialExpenses;
     }
     renderExpenses();
     updateExpenseStats();
-  });
+  }, (err) => console.error("Firebase Read Error (expenses):", err));
 
   function updateExpenseStats() {
     let total = 0;
@@ -552,7 +558,7 @@
       btn.addEventListener('click', (e) => {
         const idx = e.currentTarget.dataset.idx;
         rawExpenses[idx].status = rawExpenses[idx].status === 'Yes' ? 'No' : 'Yes';
-        set(ref(db, 'expenses'), rawExpenses);
+        saveData('expenses', rawExpenses);
       });
     });
 
@@ -564,7 +570,7 @@
         const newAmt = prompt(`Edit amount (€) for "${rawExpenses[idx].item}":`, currentAmt);
         if (newAmt !== null && !isNaN(newAmt)) {
           rawExpenses[idx].amount = parseFloat(newAmt);
-          set(ref(db, 'expenses'), rawExpenses);
+          saveData('expenses', rawExpenses);
         }
       });
     });
@@ -574,7 +580,7 @@
       sel.addEventListener('change', (e) => {
         const idx = e.currentTarget.dataset.idx;
         rawExpenses[idx].paidBy = e.currentTarget.value;
-        set(ref(db, 'expenses'), rawExpenses);
+        saveData('expenses', rawExpenses);
       });
     });
 
@@ -595,7 +601,7 @@
     if (newUrl !== null) {
       rawExpenses[index].driveUrl = newUrl.trim();
       if (!rawExpenses[index].doc && rawExpenses[index].driveUrl) rawExpenses[index].doc = "Voucher Link";
-      set(ref(db, 'expenses'), rawExpenses);
+      saveData('expenses', rawExpenses);
     }
   }
 
@@ -620,7 +626,7 @@
         driveUrl: ''
       });
 
-      set(ref(db, 'expenses'), rawExpenses);
+      saveData('expenses', rawExpenses);
 
       // Clear inputs
       document.getElementById('exp-item-input').value = '';
@@ -633,7 +639,7 @@
   function deleteExpense(index) {
     if (confirm(`Delete expense "${rawExpenses[index].item}"?`)) {
       rawExpenses.splice(index, 1);
-      set(ref(db, 'expenses'), rawExpenses);
+      saveData('expenses', rawExpenses);
     }
   }
 
@@ -658,7 +664,7 @@
         const idx = e.target.dataset.idx;
         const person = e.target.dataset.person;
         masterGear[idx][person] = e.target.checked;
-        set(ref(db, 'gear'), masterGear);
+        saveData('gear', masterGear);
       });
     });
 
@@ -673,7 +679,7 @@
 
     if (val) {
       masterGear.push({ name: val, danny: false, max: false, tal: false });
-      set(ref(db, 'gear'), masterGear);
+      saveData('gear', masterGear);
       input.value = '';
     }
   }
@@ -681,11 +687,11 @@
   function deleteGearItem(index) {
     if (confirm(`Delete "${masterGear[index].name}"?`)) {
       masterGear.splice(index, 1);
-      set(ref(db, 'gear'), masterGear);
+      saveData('gear', masterGear);
     }
   }
 
-  // Event Handlers
+  // Navigation handlers
   document.getElementById('btn-expenses').addEventListener('click', () => switchTab('expenses'));
   document.getElementById('btn-checklist').addEventListener('click', () => switchTab('checklist'));
   document.getElementById('btn-itinerary').addEventListener('click', () => switchTab('itinerary'));
