@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>High Tatras Trip Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
   :root {
     --bg-primary: #0f172a;
@@ -31,10 +32,22 @@
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0d9488 100%);
     color: #ffffff;
     padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .app-title { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; }
   .app-subtitle { font-size: 0.8rem; color: #cbd5e1; font-weight: 500; }
+  
+  .sync-badge {
+    background-color: #10b981;
+    color: white;
+    font-size: 0.68rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+  }
 
   /* Navigation Bar */
   .nav-tabs {
@@ -100,7 +113,6 @@
 
   .stat-label { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
   .stat-val { font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-top: 2px; }
-  .stat-sub { font-size: 0.7rem; font-weight: 600; margin-top: 2px; }
 
   /* Card */
   .card {
@@ -168,7 +180,7 @@
     padding: 10px 12px;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    font-size: 16px; /* Prevents iOS auto-zoom on input focus */
+    font-size: 16px;
     outline: none;
   }
 
@@ -222,21 +234,23 @@
   .day-route { font-size: 0.82rem; color: #475569; line-height: 1.4; white-space: normal; }
   .day-stats { display: flex; gap: 6px; margin-top: 10px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); flex-wrap: wrap; }
   .stat-chip { background-color: #f1f5f9; padding: 3px 8px; border-radius: 4px; }
-
 </style>
 </head>
 <body>
 
   <header class="app-header">
-    <div class="app-title">⛰️ High Tatras Expedition 2026</div>
-    <div class="app-subtitle">Slovakia Trek • Tal, Max & Danny</div>
+    <div>
+      <div class="app-title">⛰️ High Tatras Expedition 2026</div>
+      <div class="app-subtitle">Slovakia Trek • Tal, Max & Danny</div>
+    </div>
+    <div class="sync-badge">⚡ Live Sync</div>
   </header>
 
   <nav class="nav-tabs">
     <div class="nav-container">
-      <button class="tab-btn active" id="btn-expenses" onclick="switchTab('expenses')">💶 Expenses</button>
-      <button class="tab-btn" id="btn-checklist" onclick="switchTab('checklist')">🎒 Gear List</button>
-      <button class="tab-btn" id="btn-itinerary" onclick="switchTab('itinerary')">🥾 Summary</button>
+      <button class="tab-btn active" id="btn-expenses">💶 Expenses</button>
+      <button class="tab-btn" id="btn-checklist">🎒 Gear List</button>
+      <button class="tab-btn" id="btn-itinerary">🥾 Summary</button>
     </div>
   </nav>
 
@@ -288,7 +302,7 @@
         <div style="font-weight:700; font-size:0.88rem; margin-bottom: 8px;">➕ Add Gear Item for Everyone</div>
         <div class="gear-controls">
           <input type="text" id="gear-item-input" class="add-input" placeholder="e.g. Rain Jacket...">
-          <button class="btn-primary" onclick="addSharedGearItem()">Add Item</button>
+          <button class="btn-primary" id="add-gear-btn">Add Item</button>
         </div>
       </div>
 
@@ -304,6 +318,7 @@
                 <th class="center">Danny</th>
                 <th class="center">Max</th>
                 <th class="center">Tal</th>
+                <th class="center">❌</th>
               </tr>
             </thead>
             <tbody id="gear-table-body"></tbody>
@@ -356,19 +371,24 @@
 
   </main>
 
-<script>
-  // Safe storage helper for iOS Safari private browsing / local file restrictions
-  function safeSetStorage(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
-  }
-  function safeGetStorage(key, fallback) {
-    try {
-      const data = localStorage.getItem(key);
-      return data ? JSON.parse(data) : fallback;
-    } catch (e) { return fallback; }
-  }
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
 
-  let rawExpenses = safeGetStorage('tatras_expenses_v3', [
+  const firebaseConfig = {
+    apiKey: "AIzaSyCQGhMH5nOqmpHMJDSnwJguEwHUYu7b2Xs",
+    authDomain: "tatras-trek.firebaseapp.com",
+    projectId: "tatras-trek",
+    storageBucket: "tatras-trek.firebasestorage.app",
+    messagingSenderId: "1074553341563",
+    appId: "1:1074553341563:web:4901f95f85647a8c5084de",
+    databaseURL: "https://tatras-trek-default-rtdb.firebaseio.com" // Auto-linked to default RTDB
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const initialExpenses = [
     { date: "15.09", item: "car rental", location: "Krakov Airport", paidBy: "Danny", status: "Yes", amount: 30.0, doc: "Voucher Ofran.pdf", driveUrl: "" },
     { date: "15.09", item: "car rental - border cross fee", location: "Krakov Airport", paidBy: "Danny", status: "No", amount: 30.0, doc: "", driveUrl: "" },
     { date: "15.09", item: "dinner in Zdiar", location: "Zdiar", paidBy: "—", status: "No", amount: 50.0, doc: "", driveUrl: "" },
@@ -382,9 +402,9 @@
     { date: "19.09", item: "Terma Bania", location: "Terma Bania", paidBy: "—", status: "No", amount: 70.0, doc: "", driveUrl: "" },
     { date: "19.09", item: "Fuel", location: "Krakov Airport", paidBy: "—", status: "No", amount: 70.0, doc: "", driveUrl: "" },
     { date: "20.09", item: "Flight", location: "Krakov Airport", paidBy: "Danny", status: "Yes", amount: 648.0, doc: "", driveUrl: "" }
-  ]);
+  ];
 
-  let masterGear = safeGetStorage('tatras_master_gear_v3', [
+  const initialGear = [
     { name: "35L-45L Backpack & Raincover", danny: true, max: false, tal: false },
     { name: "Hiking Boots (Broken-in)", danny: true, max: true, tal: true },
     { name: "Trekking Poles", danny: false, max: false, tal: false },
@@ -394,7 +414,33 @@
     { name: "Headlamp + Extra Batteries", danny: false, max: false, tal: false },
     { name: "Powerbank (10,000+ mAh)", danny: false, max: false, tal: true },
     { name: "First Aid & Blister Plasters", danny: false, max: true, tal: false }
-  ]);
+  ];
+
+  let rawExpenses = [];
+  let masterGear = [];
+
+  // Listeners
+  onValue(ref(db, 'gear'), (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      masterGear = data;
+    } else {
+      set(ref(db, 'gear'), initialGear);
+      masterGear = initialGear;
+    }
+    renderGear();
+  });
+
+  onValue(ref(db, 'expenses'), (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      rawExpenses = data;
+    } else {
+      set(ref(db, 'expenses'), initialExpenses);
+      rawExpenses = initialExpenses;
+    }
+    renderExpenses();
+  });
 
   function renderExpenses() {
     const tbody = document.getElementById('expense-table-body');
@@ -407,11 +453,11 @@
       if (exp.driveUrl) {
         docCol = `
           <a class="doc-btn" href="${exp.driveUrl}" target="_blank" rel="noopener">📄 ${exp.doc || 'Open'}</a>
-          <button class="edit-link-btn" onclick="editLink(${idx})">✏️</button>
+          <button class="edit-link-btn" data-idx="${idx}">✏️</button>
         `;
       } else {
         docCol = `
-          <button class="doc-btn" style="background:#f8fafc; color:#94a3b8; border-color:#e2e8f0;" onclick="editLink(${idx})">
+          <button class="doc-btn edit-link-btn" style="background:#f8fafc; color:#94a3b8; border-color:#e2e8f0;" data-idx="${idx}">
             ${exp.doc ? '📄 ' + exp.doc : '➕ Add Link'}
           </button>
         `;
@@ -428,16 +474,19 @@
       `;
       tbody.appendChild(tr);
     });
+
+    document.querySelectorAll('.edit-link-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => editLink(e.currentTarget.dataset.idx));
+    });
   }
 
   function editLink(index) {
     const exp = rawExpenses[index];
     let newUrl = prompt(`Enter web/Drive link for: ${exp.item}`, exp.driveUrl || '');
     if (newUrl !== null) {
-      exp.driveUrl = newUrl.trim();
-      if (!exp.doc && exp.driveUrl) exp.doc = "Voucher Link";
-      safeSetStorage('tatras_expenses_v3', rawExpenses);
-      renderExpenses();
+      rawExpenses[index].driveUrl = newUrl.trim();
+      if (!rawExpenses[index].doc && rawExpenses[index].driveUrl) rawExpenses[index].doc = "Voucher Link";
+      set(ref(db, 'expenses'), rawExpenses);
     }
   }
 
@@ -449,17 +498,26 @@
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td style="font-weight:600; color:var(--text-main); white-space:normal;">${item.name}</td>
-        <td class="center"><input type="checkbox" class="gear-checkbox" ${item.danny ? 'checked' : ''} onchange="toggleGearCheck(${index}, 'danny')"></td>
-        <td class="center"><input type="checkbox" class="gear-checkbox" ${item.max ? 'checked' : ''} onchange="toggleGearCheck(${index}, 'max')"></td>
-        <td class="center"><input type="checkbox" class="gear-checkbox" ${item.tal ? 'checked' : ''} onchange="toggleGearCheck(${index}, 'tal')"></td>
+        <td class="center"><input type="checkbox" class="gear-checkbox" data-idx="${index}" data-person="danny" ${item.danny ? 'checked' : ''}></td>
+        <td class="center"><input type="checkbox" class="gear-checkbox" data-idx="${index}" data-person="max" ${item.max ? 'checked' : ''}></td>
+        <td class="center"><input type="checkbox" class="gear-checkbox" data-idx="${index}" data-person="tal" ${item.tal ? 'checked' : ''}></td>
+        <td class="center"><button class="delete-btn" style="background:none; border:none; color:#ef4444; cursor:pointer;" data-idx="${index}">🗑️</button></td>
       `;
       tbody.appendChild(tr);
     });
-  }
 
-  function toggleGearCheck(index, person) {
-    masterGear[index][person] = !masterGear[index][person];
-    safeSetStorage('tatras_master_gear_v3', masterGear);
+    document.querySelectorAll('.gear-checkbox').forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        const idx = e.target.dataset.idx;
+        const person = e.target.dataset.person;
+        masterGear[idx][person] = e.target.checked;
+        set(ref(db, 'gear'), masterGear);
+      });
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => deleteGearItem(e.currentTarget.dataset.idx));
+    });
   }
 
   function addSharedGearItem() {
@@ -468,11 +526,23 @@
 
     if (val) {
       masterGear.push({ name: val, danny: false, max: false, tal: false });
-      safeSetStorage('tatras_master_gear_v3', masterGear);
+      set(ref(db, 'gear'), masterGear);
       input.value = '';
-      renderGear();
     }
   }
+
+  function deleteGearItem(index) {
+    if (confirm(`Delete "${masterGear[index].name}"?`)) {
+      masterGear.splice(index, 1);
+      set(ref(db, 'gear'), masterGear);
+    }
+  }
+
+  // Navigation handlers
+  document.getElementById('btn-expenses').addEventListener('click', () => switchTab('expenses'));
+  document.getElementById('btn-checklist').addEventListener('click', () => switchTab('checklist'));
+  document.getElementById('btn-itinerary').addEventListener('click', () => switchTab('itinerary'));
+  document.getElementById('add-gear-btn').addEventListener('click', addSharedGearItem);
 
   function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -481,9 +551,6 @@
     document.getElementById('btn-' + tabId).classList.add('active');
     document.getElementById(tabId).classList.add('active');
   }
-
-  renderExpenses();
-  renderGear();
 </script>
 </body>
 </html>
