@@ -415,7 +415,7 @@
   const firebaseConfig = {
     apiKey: "AIzaSyCQGhMH5nOqmpHMJDSnwJguEwHUYu7b2Xs",
     authDomain: "tatras-trek.firebaseapp.com",
-    databaseURL: "[https://tatras-trek-default-rtdb.europe-west1.firebasedatabase.app](https://tatras-trek-default-rtdb.europe-west1.firebasedatabase.app)",
+    databaseURL: "https://tatras-trek-default-rtdb.europe-west1.firebasedatabase.app/",
     projectId: "tatras-trek",
     storageBucket: "tatras-trek.firebasestorage.app",
     messagingSenderId: "1074553341563",
@@ -423,7 +423,10 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  
+  // Explicitly sanitize and pass the database URL to getDatabase
+  const dbUrl = firebaseConfig.databaseURL.trim();
+  const db = getDatabase(app, dbUrl);
 
   const initialExpenses = [
     { date: "15.09", item: "car rental", location: "Krakov Airport", paidBy: "Danny", status: "Yes", amount: 30.0, doc: "Voucher Ofran.pdf", driveUrl: "" },
