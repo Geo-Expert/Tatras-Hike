@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>High Tatras Trip Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0f172a;
+    --bg-surface: #1e293b;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --primary: #0d9488;
+    --primary-hover: #0f766e;
+    --accent-blue: #2563eb;
+    --accent-amber: #d97706;
+    --border-color: #e2e8f0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background-color: #f1f5f9;
+    color: var(--text-main);
+    padding-bottom: 40px;
+  }
+
+  /* Header */
+  .app-header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0d9488 100%);
+    color: #ffffff;
+    padding: 16px 20px;
+  }
+
+  .app-title { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; }
+  .app-subtitle { font-size: 0.8rem; color: #cbd5e1; font-weight: 500; }
+
+  /* Navigation Bar */
+  .nav-tabs {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  .nav-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 12px 8px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background-color: #f8fafc;
+  }
+
+  /* Main Container */
+  .main-content {
+    max-width: 900px;
+    margin: 16px auto;
+    padding: 0 12px;
+  }
+
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stat-card {
+    background: #ffffff;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+  }
+
+  .stat-label { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
+  .stat-val { font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-top: 2px; }
+  .stat-sub { font-size: 0.7rem; font-weight: 600; margin-top: 2px; }
+
+  /* Card */
+  .card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    margin-bottom: 16px;
+  }
+
+  .card-header {
+    padding: 14px 16px;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Table */
+  .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.82rem; }
+  th { background-color: #f8fafc; color: var(--text-muted); padding: 10px 12px; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; white-space: nowrap; }
+
+  .badge { padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; display: inline-block; }
+  .badge-paid { background-color: #d1fae5; color: #065f46; }
+  .badge-pending { background-color: #fef3c7; color: #92400e; }
+  .person-tag { background-color: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
+
+  .doc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    background-color: #eff6ff;
+    color: var(--accent-blue);
+    border: 1px solid #bfdbfe;
+    cursor: pointer;
+  }
+
+  .edit-link-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 4px;
+    margin-left: 4px;
+  }
+
+  /* Controls */
+  .gear-controls { display: flex; gap: 8px; }
+
+  .add-input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 16px; /* Prevents iOS auto-zoom on input focus */
+    outline: none;
+  }
+
+  .btn-primary {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* Gear Table */
+  .gear-table th.center, .gear-table td.center { text-align: center; width: 60px; }
+
+  .gear-checkbox {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+
+  /* Day Hike Timeline */
+  .timeline { position: relative; padding-left: 16px; border-left: 2px solid #cbd5e1; margin-left: 8px; }
+  .day-card {
+    position: relative;
+    background: white;
+    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 16px;
+  }
+
+  .day-card::before {
+    content: '';
+    position: absolute;
+    left: -23px;
+    top: 16px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    border: 2px solid white;
+  }
+
+  .day-badge { font-size: 0.7rem; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+  .day-title { font-size: 1rem; font-weight: 700; margin: 2px 0 6px 0; }
+  .day-route { font-size: 0.82rem; color: #475569; line-height: 1.4; white-space: normal; }
+  .day-stats { display: flex; gap: 6px; margin-top: 10px; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); flex-wrap: wrap; }
+  .stat-chip { background-color: #f1f5f9; padding: 3px 8px; border-radius: 4px; }
+
+</style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="app-title">⛰️ High Tatras Expedition 2026</div>
+    <div class="app-subtitle">Slovakia Trek • Tal, Max & Danny</div>
+  </header>
+
+  <nav class="nav-tabs">
+    <div class="nav-container">
+      <button class="tab-btn active" id="btn-expenses" onclick="switchTab('expenses')">💶 Expenses</button>
+      <button class="tab-btn" id="btn-checklist" onclick="switchTab('checklist')">🎒 Gear List</button>
+      <button class="tab-btn" id="btn-itinerary" onclick="switchTab('itinerary')">🥾 Summary</button>
+    </div>
+  </nav>
+
+  <main class="main-content">
+
+    <!-- TAB 1: EXPENSES -->
+    <div id="expenses" class="tab-pane active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Estimated</div>
+          <div class="stat-val">€1,372.50</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pre-Paid</div>
+          <div class="stat-val" style="color:#059669">€973.50</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Outstanding</div>
+          <div class="stat-val" style="color:var(--accent-amber)">€399.00</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>Expense Tracker</span>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Expense</th>
+                <th>Location</th>
+                <th>Paid By</th>
+                <th>Status</th>
+                <th style="text-align:right">Sum (€)</th>
+                <th>Voucher / Link</th>
+              </tr>
+            </thead>
+            <tbody id="expense-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: GEAR CHECKLIST -->
+    <div id="checklist" class="tab-pane">
+      <div class="card" style="padding: 14px; margin-bottom: 14px;">
+        <div style="font-weight:700; font-size:0.88rem; margin-bottom: 8px;">➕ Add Gear Item for Everyone</div>
+        <div class="gear-controls">
+          <input type="text" id="gear-item-input" class="add-input" placeholder="e.g. Rain Jacket...">
+          <button class="btn-primary" onclick="addSharedGearItem()">Add Item</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>Master Gear Checklist</span>
+        </div>
+        <div class="table-responsive">
+          <table class="gear-table">
+            <thead>
+              <tr>
+                <th>Item Description</th>
+                <th class="center">Danny</th>
+                <th class="center">Max</th>
+                <th class="center">Tal</th>
+              </tr>
+            </thead>
+            <tbody id="gear-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: HIKE SUMMARY -->
+    <div id="itinerary" class="tab-pane">
+      <div class="timeline">
+        <div class="day-card">
+          <div class="day-badge">Day 1 • Sept 15</div>
+          <div class="day-title">Arrival Kraków & Travel to Ždiar</div>
+          <div class="day-route">Pickup rented car at Kraków Airport. Drive south through Poland into Slovakia to Ždiar village. Rest at B&B.</div>
+          <div class="day-stats"><span class="stat-chip">🚗 ~2h Drive</span><span class="stat-chip">🏡 Stay: Ždiar B&B</span></div>
+        </div>
+        <div class="day-card">
+          <div class="day-badge">Day 2 • Sept 16</div>
+          <div class="day-title">Ždiar to Chata pri Zelenom plese</div>
+          <div class="day-route">Start trekking along Tatranská Magistrála trail entering Belianske Tatras up to Emerald Lake mountain hut.</div>
+          <div class="day-stats"><span class="stat-chip">🥾 ~11 km</span><span class="stat-chip">⛰️ +750 m ascent</span><span class="stat-chip">🏡 Stay: Zelenom plese</span></div>
+        </div>
+        <div class="day-card">
+          <div class="day-badge">Day 3 • Sept 17</div>
+          <div class="day-title">Zelenom plese to Zbojnícka Chata</div>
+          <div class="day-route">Ascend steep zigzag trail to Veľká Svišťovka pass (2,037m). Traverse past Skalnaté Pleso to Zbojnícka chata.</div>
+          <div class="day-stats"><span class="stat-chip">🥾 ~13 km</span><span class="stat-chip">⛰️ High pass crossing</span><span class="stat-chip">🏡 Stay: Zbojnícka Chata</span></div>
+        </div>
+        <div class="day-card">
+          <div class="day-badge">Day 4 • Sept 18</div>
+          <div class="day-title">Zbojnícka Chata to Popradské Pleso</div>
+          <div class="day-route">Cross chain-assisted Prielom pass (2,288m) into Veľká Studená dolina down towards Popradské pleso lake.</div>
+          <div class="day-stats"><span class="stat-chip">🥾 ~12 km</span><span class="stat-chip">⛓️ Chains at Prielom</span><span class="stat-chip">🏡 Stay: Popradské Pleso</span></div>
+        </div>
+        <div class="day-card">
+          <div class="day-badge">Day 5 • Sept 19</div>
+          <div class="day-title">Descent, Terma Bania Spa & Drive</div>
+          <div class="day-route">Hike down to vehicle parking. Drive to Terma Bania thermal baths for muscle recovery before driving to Kraków.</div>
+          <div class="day-stats"><span class="stat-chip">♨️ Thermal Spa</span><span class="stat-chip">🚗 Drive to Kraków</span></div>
+        </div>
+        <div class="day-card">
+          <div class="day-badge">Day 6 • Sept 20</div>
+          <div class="day-title">Flight Home</div>
+          <div class="day-route">Return rental vehicle at Kraków Airport and check in for outbound flight home.</div>
+          <div class="day-stats"><span class="stat-chip">✈️ Return Flight</span></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+<script>
+  // Safe storage helper for iOS Safari private browsing / local file restrictions
+  function safeSetStorage(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+  }
+  function safeGetStorage(key, fallback) {
+    try {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : fallback;
+    } catch (e) { return fallback; }
+  }
+
+  let rawExpenses = safeGetStorage('tatras_expenses_v3', [
+    { date: "15.09", item: "car rental", location: "Krakov Airport", paidBy: "Danny", status: "Yes", amount: 30.0, doc: "Voucher Ofran.pdf", driveUrl: "" },
+    { date: "15.09", item: "car rental - border cross fee", location: "Krakov Airport", paidBy: "Danny", status: "No", amount: 30.0, doc: "", driveUrl: "" },
+    { date: "15.09", item: "dinner in Zdiar", location: "Zdiar", paidBy: "—", status: "No", amount: 50.0, doc: "", driveUrl: "" },
+    { date: "15.09", item: "Bed&Breakfeast", location: "Zdiar", paidBy: "Max", status: "Yes", amount: null, doc: "", driveUrl: "" },
+    { date: "16.09", item: "Bed&Half Board", location: "Zelene plese", paidBy: "Max", status: "No", amount: null, doc: "", driveUrl: "" },
+    { date: "17.09", item: "Bed", location: "Zabucheka Chata", paidBy: "Danny", status: "Yes", amount: 135.0, doc: "zabuncheka chata.pdf", driveUrl: "" },
+    { date: "17.09", item: "Half Board", location: "Zabucheka Chata", paidBy: "Danny", status: "No", amount: 69.0, doc: "zabuncheka chata.pdf", driveUrl: "" },
+    { date: "18.09", item: "Bed&Breakfeast", location: "Popradske Pleso", paidBy: "Danny", status: "Yes", amount: 160.5, doc: "popradske pleso.pdf", driveUrl: "" },
+    { date: "19.09", item: "Parking", location: "High Tatras", paidBy: "—", status: "No", amount: 60.0, doc: "", driveUrl: "" },
+    { date: "19.09", item: "Dinner", location: "High Tatras", paidBy: "—", status: "No", amount: 50.0, doc: "", driveUrl: "" },
+    { date: "19.09", item: "Terma Bania", location: "Terma Bania", paidBy: "—", status: "No", amount: 70.0, doc: "", driveUrl: "" },
+    { date: "19.09", item: "Fuel", location: "Krakov Airport", paidBy: "—", status: "No", amount: 70.0, doc: "", driveUrl: "" },
+    { date: "20.09", item: "Flight", location: "Krakov Airport", paidBy: "Danny", status: "Yes", amount: 648.0, doc: "", driveUrl: "" }
+  ]);
+
+  let masterGear = safeGetStorage('tatras_master_gear_v3', [
+    { name: "35L-45L Backpack & Raincover", danny: true, max: false, tal: false },
+    { name: "Hiking Boots (Broken-in)", danny: true, max: true, tal: true },
+    { name: "Trekking Poles", danny: false, max: false, tal: false },
+    { name: "Waterproof Shell / Rain Jacket", danny: false, max: false, tal: false },
+    { name: "Sleeping Bag Liner / Sheet", danny: false, max: false, tal: false },
+    { name: "Warm Fleece / Down Jacket", danny: false, max: false, tal: false },
+    { name: "Headlamp + Extra Batteries", danny: false, max: false, tal: false },
+    { name: "Powerbank (10,000+ mAh)", danny: false, max: false, tal: true },
+    { name: "First Aid & Blister Plasters", danny: false, max: true, tal: false }
+  ]);
+
+  function renderExpenses() {
+    const tbody = document.getElementById('expense-table-body');
+    tbody.innerHTML = '';
+
+    rawExpenses.forEach((exp, idx) => {
+      const tr = document.createElement('tr');
+      let docCol = '';
+      
+      if (exp.driveUrl) {
+        docCol = `
+          <a class="doc-btn" href="${exp.driveUrl}" target="_blank" rel="noopener">📄 ${exp.doc || 'Open'}</a>
+          <button class="edit-link-btn" onclick="editLink(${idx})">✏️</button>
+        `;
+      } else {
+        docCol = `
+          <button class="doc-btn" style="background:#f8fafc; color:#94a3b8; border-color:#e2e8f0;" onclick="editLink(${idx})">
+            ${exp.doc ? '📄 ' + exp.doc : '➕ Add Link'}
+          </button>
+        `;
+      }
+
+      tr.innerHTML = `
+        <td><strong>${exp.date}</strong></td>
+        <td style="font-weight:600">${exp.item}</td>
+        <td>${exp.location}</td>
+        <td><span class="person-tag">${exp.paidBy}</span></td>
+        <td><span class="badge ${exp.status === 'Yes' ? 'badge-paid' : 'badge-pending'}">${exp.status === 'Yes' ? 'Paid' : 'Pending'}</span></td>
+        <td style="text-align:right; font-weight:700">${exp.amount ? '€' + exp.amount.toFixed(2) : 'Pending'}</td>
+        <td>${docCol}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function editLink(index) {
+    const exp = rawExpenses[index];
+    let newUrl = prompt(`Enter web/Drive link for: ${exp.item}`, exp.driveUrl || '');
+    if (newUrl !== null) {
+      exp.driveUrl = newUrl.trim();
+      if (!exp.doc && exp.driveUrl) exp.doc = "Voucher Link";
+      safeSetStorage('tatras_expenses_v3', rawExpenses);
+      renderExpenses();
+    }
+  }
+
+  function renderGear() {
+    const tbody = document.getElementById('gear-table-body');
+    tbody.innerHTML = '';
+
+    masterGear.forEach((item, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight:600; color:var(--text-main); white-space:normal;">${item.name}</td>
+        <td class="center"><input type="checkbox" class="gear-checkbox" ${item.danny ? 'checked' : ''} onchange="toggleGearCheck(${index}, 'danny')"></td>
+        <td class="center"><input type="checkbox" class="gear-checkbox" ${item.max ? 'checked' : ''} onchange="toggleGearCheck(${index}, 'max')"></td>
+        <td class="center"><input type="checkbox" class="gear-checkbox" ${item.tal ? 'checked' : ''} onchange="toggleGearCheck(${index}, 'tal')"></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function toggleGearCheck(index, person) {
+    masterGear[index][person] = !masterGear[index][person];
+    safeSetStorage('tatras_master_gear_v3', masterGear);
+  }
+
+  function addSharedGearItem() {
+    const input = document.getElementById('gear-item-input');
+    const val = input.value.trim();
+
+    if (val) {
+      masterGear.push({ name: val, danny: false, max: false, tal: false });
+      safeSetStorage('tatras_master_gear_v3', masterGear);
+      input.value = '';
+      renderGear();
+    }
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+    document.getElementById('btn-' + tabId).classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  renderExpenses();
+  renderGear();
+</script>
+</body>
+</html>
