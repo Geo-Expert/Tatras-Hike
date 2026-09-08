@@ -135,25 +135,84 @@
     align-items: center;
   }
 
-  /* Table */
+  /* Form & Controls */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 8px;
+  }
+
+  .add-input, .add-select {
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    outline: none;
+    background: #ffffff;
+  }
+
+  .btn-primary {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* Table Styling */
   .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
   table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.82rem; }
   th { background-color: #f8fafc; color: var(--text-muted); padding: 10px 12px; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
-  td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; white-space: nowrap; }
+  td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; white-space: nowrap; }
 
-  .badge { padding: 3px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; display: inline-block; }
+  /* Interactive Elements */
+  .badge {
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+    border: none;
+  }
   .badge-paid { background-color: #d1fae5; color: #065f46; }
   .badge-pending { background-color: #fef3c7; color: #92400e; }
-  .person-tag { background-color: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 0.75rem; }
+
+  .select-person {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .amount-btn {
+    background: #f8fafc;
+    border: 1px dashed var(--border-color);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.82rem;
+  }
 
   .doc-btn {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    padding: 6px 10px;
+    padding: 4px 8px;
     border-radius: 6px;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: 600;
     text-decoration: none;
     background-color: #eff6ff;
@@ -167,44 +226,14 @@
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    font-size: 0.85rem;
-    padding: 4px;
-    margin-left: 4px;
+    font-size: 0.82rem;
+    padding: 2px;
   }
 
-  /* Controls */
+  /* Gear Checklist */
   .gear-controls { display: flex; gap: 8px; }
-
-  .add-input {
-    flex: 1;
-    padding: 10px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 16px;
-    outline: none;
-  }
-
-  .btn-primary {
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  /* Gear Table */
   .gear-table th.center, .gear-table td.center { text-align: center; width: 60px; }
-
-  .gear-checkbox {
-    width: 22px;
-    height: 22px;
-    accent-color: var(--primary);
-    cursor: pointer;
-  }
+  .gear-checkbox { width: 22px; height: 22px; accent-color: var(--primary); cursor: pointer; }
 
   /* Day Hike Timeline */
   .timeline { position: relative; padding-left: 16px; border-left: 2px solid #cbd5e1; margin-left: 8px; }
@@ -216,19 +245,9 @@
     border: 1px solid var(--border-color);
     margin-bottom: 16px;
   }
-
   .day-card::before {
-    content: '';
-    position: absolute;
-    left: -23px;
-    top: 16px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: var(--primary);
-    border: 2px solid white;
+    content: ''; position: absolute; left: -23px; top: 16px; width: 12px; height: 12px; border-radius: 50%; background-color: var(--primary); border: 2px solid white;
   }
-
   .day-badge { font-size: 0.7rem; font-weight: 800; color: var(--primary); text-transform: uppercase; }
   .day-title { font-size: 1rem; font-weight: 700; margin: 2px 0 6px 0; }
   .day-route { font-size: 0.82rem; color: #475569; line-height: 1.4; white-space: normal; }
@@ -261,15 +280,32 @@
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-label">Total Estimated</div>
-          <div class="stat-val">€1,372.50</div>
+          <div class="stat-val" id="stat-total">€0.00</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Pre-Paid</div>
-          <div class="stat-val" style="color:#059669">€973.50</div>
+          <div class="stat-val" id="stat-paid" style="color:#059669">€0.00</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Outstanding</div>
-          <div class="stat-val" style="color:var(--accent-amber)">€399.00</div>
+          <div class="stat-val" id="stat-pending" style="color:var(--accent-amber)">€0.00</div>
+        </div>
+      </div>
+
+      <!-- ADD NEW EXPENSE -->
+      <div class="card" style="padding: 12px; margin-bottom: 14px;">
+        <div style="font-weight:700; font-size:0.85rem; margin-bottom: 8px;">➕ Add Expense Item</div>
+        <div class="form-grid">
+          <input type="text" id="exp-item-input" class="add-input" placeholder="Expense description...">
+          <input type="text" id="exp-loc-input" class="add-input" placeholder="Location...">
+          <input type="number" id="exp-amount-input" class="add-input" placeholder="Sum (€)">
+          <select id="exp-paidby-input" class="add-select">
+            <option value="—">Paid By: —</option>
+            <option value="Danny">Danny</option>
+            <option value="Max">Max</option>
+            <option value="Tal">Tal</option>
+          </select>
+          <button class="btn-primary" id="add-expense-btn">Add Expense</button>
         </div>
       </div>
 
@@ -288,6 +324,7 @@
                 <th>Status</th>
                 <th style="text-align:right">Sum (€)</th>
                 <th>Voucher / Link</th>
+                <th style="text-align:center">🗑️</th>
               </tr>
             </thead>
             <tbody id="expense-table-body"></tbody>
@@ -375,6 +412,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
   import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
 
+  // Your Firebase Configuration
   const firebaseConfig = {
     apiKey: "AIzaSyCQGhMH5nOqmpHMJDSnwJguEwHUYu7b2Xs",
     authDomain: "tatras-trek.firebaseapp.com",
@@ -382,7 +420,7 @@
     storageBucket: "tatras-trek.firebasestorage.app",
     messagingSenderId: "1074553341563",
     appId: "1:1074553341563:web:4901f95f85647a8c5084de",
-    databaseURL: "https://tatras-trek-default-rtdb.firebaseio.com" // Auto-linked to default RTDB
+    databaseURL: "https://tatras-trek-default-rtdb.firebaseio.com"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -392,8 +430,8 @@
     { date: "15.09", item: "car rental", location: "Krakov Airport", paidBy: "Danny", status: "Yes", amount: 30.0, doc: "Voucher Ofran.pdf", driveUrl: "" },
     { date: "15.09", item: "car rental - border cross fee", location: "Krakov Airport", paidBy: "Danny", status: "No", amount: 30.0, doc: "", driveUrl: "" },
     { date: "15.09", item: "dinner in Zdiar", location: "Zdiar", paidBy: "—", status: "No", amount: 50.0, doc: "", driveUrl: "" },
-    { date: "15.09", item: "Bed&Breakfeast", location: "Zdiar", paidBy: "Max", status: "Yes", amount: null, doc: "", driveUrl: "" },
-    { date: "16.09", item: "Bed&Half Board", location: "Zelene plese", paidBy: "Max", status: "No", amount: null, doc: "", driveUrl: "" },
+    { date: "15.09", item: "Bed&Breakfeast", location: "Zdiar", paidBy: "Max", status: "Yes", amount: 0, doc: "", driveUrl: "" },
+    { date: "16.09", item: "Bed&Half Board", location: "Zelene plese", paidBy: "Max", status: "No", amount: 0, doc: "", driveUrl: "" },
     { date: "17.09", item: "Bed", location: "Zabucheka Chata", paidBy: "Danny", status: "Yes", amount: 135.0, doc: "zabuncheka chata.pdf", driveUrl: "" },
     { date: "17.09", item: "Half Board", location: "Zabucheka Chata", paidBy: "Danny", status: "No", amount: 69.0, doc: "zabuncheka chata.pdf", driveUrl: "" },
     { date: "18.09", item: "Bed&Breakfeast", location: "Popradske Pleso", paidBy: "Danny", status: "Yes", amount: 160.5, doc: "popradske pleso.pdf", driveUrl: "" },
@@ -440,7 +478,25 @@
       rawExpenses = initialExpenses;
     }
     renderExpenses();
+    updateExpenseStats();
   });
+
+  function updateExpenseStats() {
+    let total = 0;
+    let paid = 0;
+    let pending = 0;
+
+    rawExpenses.forEach(exp => {
+      const amt = Number(exp.amount) || 0;
+      total += amt;
+      if (exp.status === 'Yes') paid += amt;
+      else pending += amt;
+    });
+
+    document.getElementById('stat-total').innerText = `€${total.toFixed(2)}`;
+    document.getElementById('stat-paid').innerText = `€${paid.toFixed(2)}`;
+    document.getElementById('stat-pending').innerText = `€${pending.toFixed(2)}`;
+  }
 
   function renderExpenses() {
     const tbody = document.getElementById('expense-table-body');
@@ -448,44 +504,135 @@
 
     rawExpenses.forEach((exp, idx) => {
       const tr = document.createElement('tr');
-      let docCol = '';
       
+      let docCol = '';
       if (exp.driveUrl) {
         docCol = `
-          <a class="doc-btn" href="${exp.driveUrl}" target="_blank" rel="noopener">📄 ${exp.doc || 'Open'}</a>
+          <a class="doc-btn" href="${exp.driveUrl}" target="_blank" rel="noopener">📄 ${exp.doc || 'Link'}</a>
           <button class="edit-link-btn" data-idx="${idx}">✏️</button>
         `;
       } else {
         docCol = `
           <button class="doc-btn edit-link-btn" style="background:#f8fafc; color:#94a3b8; border-color:#e2e8f0;" data-idx="${idx}">
-            ${exp.doc ? '📄 ' + exp.doc : '➕ Add Link'}
+            ${exp.doc ? '📄 ' + exp.doc : '➕ Link'}
           </button>
         `;
       }
 
       tr.innerHTML = `
-        <td><strong>${exp.date}</strong></td>
+        <td><strong>${exp.date || '—'}</strong></td>
         <td style="font-weight:600">${exp.item}</td>
-        <td>${exp.location}</td>
-        <td><span class="person-tag">${exp.paidBy}</span></td>
-        <td><span class="badge ${exp.status === 'Yes' ? 'badge-paid' : 'badge-pending'}">${exp.status === 'Yes' ? 'Paid' : 'Pending'}</span></td>
-        <td style="text-align:right; font-weight:700">${exp.amount ? '€' + exp.amount.toFixed(2) : 'Pending'}</td>
+        <td>${exp.location || '—'}</td>
+        <td>
+          <select class="select-person" data-idx="${idx}">
+            <option value="—" ${exp.paidBy === '—' ? 'selected' : ''}>—</option>
+            <option value="Danny" ${exp.paidBy === 'Danny' ? 'selected' : ''}>Danny</option>
+            <option value="Max" ${exp.paidBy === 'Max' ? 'selected' : ''}>Max</option>
+            <option value="Tal" ${exp.paidBy === 'Tal' ? 'selected' : ''}>Tal</option>
+          </select>
+        </td>
+        <td>
+          <button class="badge ${exp.status === 'Yes' ? 'badge-paid' : 'badge-pending'}" data-idx="${idx}">
+            ${exp.status === 'Yes' ? 'Paid' : 'Pending'}
+          </button>
+        </td>
+        <td style="text-align:right">
+          <button class="amount-btn" data-idx="${idx}">€${(Number(exp.amount) || 0).toFixed(2)}</button>
+        </td>
         <td>${docCol}</td>
+        <td style="text-align:center">
+          <button class="delete-exp-btn" style="background:none; border:none; color:#ef4444; cursor:pointer;" data-idx="${idx}">🗑️</button>
+        </td>
       `;
       tbody.appendChild(tr);
     });
 
+    // Toggle Paid Status
+    document.querySelectorAll('.badge').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = e.currentTarget.dataset.idx;
+        rawExpenses[idx].status = rawExpenses[idx].status === 'Yes' ? 'No' : 'Yes';
+        set(ref(db, 'expenses'), rawExpenses);
+      });
+    });
+
+    // Edit Amount
+    document.querySelectorAll('.amount-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = e.currentTarget.dataset.idx;
+        const currentAmt = rawExpenses[idx].amount || 0;
+        const newAmt = prompt(`Edit amount (€) for "${rawExpenses[idx].item}":`, currentAmt);
+        if (newAmt !== null && !isNaN(newAmt)) {
+          rawExpenses[idx].amount = parseFloat(newAmt);
+          set(ref(db, 'expenses'), rawExpenses);
+        }
+      });
+    });
+
+    // Edit Paid By
+    document.querySelectorAll('.select-person').forEach(sel => {
+      sel.addEventListener('change', (e) => {
+        const idx = e.currentTarget.dataset.idx;
+        rawExpenses[idx].paidBy = e.currentTarget.value;
+        set(ref(db, 'expenses'), rawExpenses);
+      });
+    });
+
+    // Edit Link
     document.querySelectorAll('.edit-link-btn').forEach(btn => {
       btn.addEventListener('click', (e) => editLink(e.currentTarget.dataset.idx));
+    });
+
+    // Delete Expense
+    document.querySelectorAll('.delete-exp-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => deleteExpense(e.currentTarget.dataset.idx));
     });
   }
 
   function editLink(index) {
     const exp = rawExpenses[index];
-    let newUrl = prompt(`Enter web/Drive link for: ${exp.item}`, exp.driveUrl || '');
+    let newUrl = prompt(`Enter Drive/Web link for "${exp.item}":`, exp.driveUrl || '');
     if (newUrl !== null) {
       rawExpenses[index].driveUrl = newUrl.trim();
       if (!rawExpenses[index].doc && rawExpenses[index].driveUrl) rawExpenses[index].doc = "Voucher Link";
+      set(ref(db, 'expenses'), rawExpenses);
+    }
+  }
+
+  function addExpense() {
+    const item = document.getElementById('exp-item-input').value.trim();
+    const loc = document.getElementById('exp-loc-input').value.trim();
+    const amount = parseFloat(document.getElementById('exp-amount-input').value) || 0;
+    const paidBy = document.getElementById('exp-paidby-input').value;
+
+    if (item) {
+      const today = new Date();
+      const dateStr = `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}`;
+      
+      rawExpenses.push({
+        date: dateStr,
+        item: item,
+        location: loc || 'High Tatras',
+        paidBy: paidBy,
+        status: paidBy !== '—' ? 'Yes' : 'No',
+        amount: amount,
+        doc: '',
+        driveUrl: ''
+      });
+
+      set(ref(db, 'expenses'), rawExpenses);
+
+      // Clear inputs
+      document.getElementById('exp-item-input').value = '';
+      document.getElementById('exp-loc-input').value = '';
+      document.getElementById('exp-amount-input').value = '';
+      document.getElementById('exp-paidby-input').value = '—';
+    }
+  }
+
+  function deleteExpense(index) {
+    if (confirm(`Delete expense "${rawExpenses[index].item}"?`)) {
+      rawExpenses.splice(index, 1);
       set(ref(db, 'expenses'), rawExpenses);
     }
   }
@@ -538,10 +685,12 @@
     }
   }
 
-  // Navigation handlers
+  // Event Handlers
   document.getElementById('btn-expenses').addEventListener('click', () => switchTab('expenses'));
   document.getElementById('btn-checklist').addEventListener('click', () => switchTab('checklist'));
   document.getElementById('btn-itinerary').addEventListener('click', () => switchTab('itinerary'));
+
+  document.getElementById('add-expense-btn').addEventListener('click', addExpense);
   document.getElementById('add-gear-btn').addEventListener('click', addSharedGearItem);
 
   function switchTab(tabId) {
